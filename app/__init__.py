@@ -2,7 +2,6 @@
 import os
 
 from flask import Flask
-from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
@@ -11,8 +10,9 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 from config import app_config
-from app.api import routes as api_routes
-from app.auth import routes as auth_routes
+from app.algorithms.routes import algo_bp
+from app.users.routes import auth_bp
+from app.category.routes import cat_bp
 
 
 def create_app(env):
@@ -24,12 +24,8 @@ def create_app(env):
     Migrate(app, db)
     login_manager.init_app(app)
 
-    api = Api(app)
-    api.add_resource(api_routes.Home, '/')
-    api.add_resource(api_routes.Protected, '/protected')
-
-    api.add_resource(auth_routes.Register, '/register')
-    api.add_resource(auth_routes.Login, '/login')
-    api.add_resource(auth_routes.Logout, '/logout')
+    app.register_blueprint(algo_bp)
+    app.register_blueprint(auth_bp, url_prefix='/user')
+    app.register_blueprint(cat_bp, url_prefix='/categories')
 
     return app

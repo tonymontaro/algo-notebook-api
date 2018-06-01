@@ -5,13 +5,25 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
 
 
+class DBHelper(object):
+    """Perform common SQLAlchemy tasks."""
+
+    @staticmethod
+    def add(item):
+        """Add item to database."""
+        db.session.add(item)
+        db.session.commit()
+
+
 class User(UserMixin, db.Model):
     """User model, used for registration and login."""
 
-    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(255), default='user')
     password = db.Column(db.String(255), nullable=False)
+    algorithms = db.relationship('Algorithm', backref='user', lazy=True)
 
     def set_password(self, password):
         """Set user password hash."""
@@ -26,10 +38,9 @@ class User(UserMixin, db.Model):
         """Register a user."""
         prev_user = User.query.filter_by(email=email).first()
         if email and password and not prev_user:
-            user = User(email=email)
+            user = User(email=email, username=email)
             user.set_password(password)
-            db.session.add(user)
-            db.session.commit()
+            DBHelper.add(user)
             return user
         return None
 
@@ -44,6 +55,57 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         """User representation."""
         return '<User {}>'.format(self.email)
+
+
+class Algorithm(db.Model):
+    """Algorithm model."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.String())
+    sub_category = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    access = db.Column(db.String(100), default='public')
+
+    @staticmethod
+    def add(**kwargs):
+        """Add item to database."""
+        algorithm = Algorithm(**kwargs)
+        DBHelper.add(algorithm)
+        return algorithm
+
+    @staticmethod
+    def get(id_):
+        algo = Algorithm.query.get(id_)
+        return algo
+
+    def get_secure_attributes(self):
+        """Return secure attributes as a Dict."""
+        return {
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'category_id': self.category_id,
+            'sub_category': self.sub_category,
+            'user_id': self.user_id,
+            'access': self.access
+        }
+
+
+class Category(db.Model):
+    """Category model."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
+    algorithms = db.relationship('Algorithm', backref='category', lazy=True)
+
+    @staticmethod
+    def add(name):
+        """Add item to database."""
+        category = Category(name=name)
+        DBHelper.add(category)
+        return category
 
 
 @login_manager.user_loader
