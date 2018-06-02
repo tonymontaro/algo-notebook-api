@@ -21,12 +21,11 @@ def home():
             return jsonify({'message': 'Login required.'}), 401
         req = request.form.get
         try:
-            algo = Algorithm.add(
-                title=req('title'),
-                content=req('content'),
-                category_id=int(req('category')),
-                sub_category=req('sub_category'),
-                user_id=current_user.id)
+            algo = Algorithm.add(title=req('title'),
+                                 content=req('content'),
+                                 category_id=int(req('category')),
+                                 sub_category=req('sub_category'),
+                                 user_id=current_user.id)
         except:
             return jsonify({'message': 'Invalid title or category id.'})
         return jsonify(algo.get_secure_attributes()), 201
@@ -35,29 +34,21 @@ def home():
 @algo_bp.route('/<int:algo_id>', methods=['GET', 'PUT', 'DELETE'])
 def algorithm(algo_id):
     """Return an algorithm given the ID."""
-    missing_algo_res = jsonify({'message': 'Algorithm does not exist.'}), 404
-    if request.method == 'GET':
-        algo = Algorithm.get(algo_id)
-        if not algo:
-            return missing_algo_res
-        return jsonify(algo.get_secure_attributes()), 200
+    algo = Algorithm.get(algo_id)
+    if not algo:
+        return jsonify({'message': 'Algorithm does not exist.'}), 404
 
-    if request.method == 'PUT':
+    if request.method == 'GET':
+        return jsonify(algo.get_secure_attributes()), 200
+    elif request.method == 'PUT':
         req = request.form.get
-        algo = Algorithm.get(algo_id)
-        if not algo:
-            return missing_algo_res
         attributes = [
             'id', 'title', 'content', 'category_id', 'sub_category', 'access']
         for attr in attributes:
             setattr(algo, attr, req(attr, getattr(algo, attr)))
         algo.save()
         return jsonify(algo.get_secure_attributes()), 200
-
-    if request.method == 'DELETE':
-        algo = Algorithm.get(algo_id)
-        if not algo:
-            return missing_algo_res
+    elif request.method == 'DELETE':
         title = algo.title
         algo.delete()
         return jsonify(

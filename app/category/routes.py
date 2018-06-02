@@ -29,24 +29,16 @@ def categories():
 @login_required
 def category(cat_id):
     """Update, retrieve and delete a category."""
-    missing_cat_res = jsonify({'message': 'Category does not exist.'}), 404
-    if request.method == 'GET':
-        cat = Category.get(cat_id)
-        if not cat:
-            return missing_cat_res
-        return jsonify({'id': cat.id, 'name': cat.name}), 200
+    cat = Category.get(cat_id)
+    if not cat:
+        return jsonify({'message': 'Category does not exist.'}), 404
 
-    if request.method == 'PUT':
-        cat = Category.get(cat_id)
-        if not cat:
-            return missing_cat_res
+    if request.method == 'GET':
+        return jsonify({'id': cat.id, 'name': cat.name}), 200
+    elif request.method == 'PUT':
         cat.name = request.form.get('name', cat.name)
         cat.save()
         return jsonify({'id': cat.id, 'name': cat.name}), 200
-
-    if request.method == 'DELETE':
-        cat = Category.get(cat_id)
-        if not cat:
-            return missing_cat_res
+    elif request.method == 'DELETE':
         cat.delete()
         return jsonify({'message': 'Category successfully deleted.'}), 200
