@@ -22,21 +22,21 @@ class AuthTestCase(unittest.TestCase):
 
     def test_user_registration(self):
         """Test for successful user registration."""
-        res = self.client.post('/user/register', data=self.user_data)
+        res = self.client.post('/users/register', data=self.user_data)
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "Registration successful.")
         self.assertEqual(res.status_code, 201)
 
     def register(self):
         """Register user."""
-        res = self.client.post('/user/register', data=self.user_data)
+        res = self.client.post('/users/register', data=self.user_data)
         self.assertEqual(res.status_code, 201)
 
     def test_registered_already(self):
         """Test for registration when the user already exists."""
-        res = self.client.post('/user/register', data=self.user_data)
+        res = self.client.post('/users/register', data=self.user_data)
         self.assertEqual(res.status_code, 201)
-        second_res = self.client.post('/user/register', data=self.user_data)
+        second_res = self.client.post('/users/register', data=self.user_data)
         self.assertEqual(second_res.status_code, 400)
         result = json.loads(second_res.data.decode())
         self.assertEqual(result['message'], "Invalid username or password.")
@@ -44,7 +44,7 @@ class AuthTestCase(unittest.TestCase):
     def test_user_login(self):
         """Test for user login."""
         self.register()
-        login_res = self.client.post('/user/login', data=self.user_data)
+        login_res = self.client.post('/users/login', data=self.user_data)
         result = json.loads(login_res.data)
         self.assertEqual(result['message'], "Login successful.")
         self.assertEqual(login_res.status_code, 200)
@@ -56,7 +56,7 @@ class AuthTestCase(unittest.TestCase):
             'email': 'montaro@gmail.com',
             'password': 'wrong-password'
         }
-        login_res = self.client.post('/user/login', data=wrong_pass_user)
+        login_res = self.client.post('/users/login', data=wrong_pass_user)
         result = json.loads(login_res.data)
         self.assertEqual(result['message'], "Invalid username or password.")
         self.assertEqual(login_res.status_code, 401)
@@ -64,26 +64,13 @@ class AuthTestCase(unittest.TestCase):
     def login(self):
         """Login user."""
         self.register()
-        login_res = self.client.post('/user/login', data=self.user_data)
+        login_res = self.client.post('/users/login', data=self.user_data)
         self.assertEqual(login_res.status_code, 200)
-
-    def test_login_required_for_protected_routes(self):
-        """Test for route protection."""
-        un_protected = json.loads(self.client.get('/').data)
-        self.assertEqual(un_protected['message'], 'Hello World!')
-        protected = self.client.get('/protected')
-        self.assertEqual(protected.status_code, 401)
-
-        self.login()
-        protected = self.client.get('/protected')
-        result = json.loads(protected.data)
-        self.assertEqual(protected.status_code, 200)
-        self.assertEqual(result['message'], 'You are logged-in.')
 
     def test_user_logout(self):
         """Test for user login."""
         self.login()
-        logout_res = self.client.post('/user/logout')
+        logout_res = self.client.post('/users/logout')
         result = json.loads(logout_res.data)
         self.assertEqual(result['message'], 'Logged out.')
         self.assertEqual(logout_res.status_code, 200)

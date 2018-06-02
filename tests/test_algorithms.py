@@ -34,40 +34,38 @@ class AlgorithmTestCase(unittest.TestCase):
 
     def login(self):
         """Login a user for other tests."""
-        res = self.client.post('/user/register', data=self.user_data)
+        res = self.client.post('/users/register', data=self.user_data)
         assert res.status_code == 201
-        login_res = self.client.post('/user/login', data=self.user_data)
+        login_res = self.client.post('/users/login', data=self.user_data)
         assert login_res.status_code == 200
 
     def create_category(self):
         """Create a category for other tests."""
+        self.login()
         res = self.client.post('/categories', data=self.cat1)
         assert res.status_code == 201
 
     def test_create_algorithm(self):
         """Test the creation of an algorithm."""
-        self.login()
         self.create_category()
-        res = self.client.post('/user/algorithms', data=self.algo1)
+        res = self.client.post('/users/algorithms', data=self.algo1)
         result = json.loads(res.data)
         assert res.status_code == 201
         assert result['title'] == 'Binary Sort'
 
     def create_algorithm(self):
         """Create an algorithm for other tests."""
-        self.login()
         self.create_category()
-        res = self.client.post('/user/algorithms', data=self.algo1)
+        res = self.client.post('/users/algorithms', data=self.algo1)
         assert res.status_code == 201
 
     def test_get_algorithms(self):
         """Get algorithms belonging to a user"""
-        self.login()
         self.create_category()
-        res = self.client.post('/user/algorithms', data=self.algo1)
+        res = self.client.post('/users/algorithms', data=self.algo1)
         assert res.status_code == 201
 
-        res = self.client.get('/user/algorithms')
+        res = self.client.get('/users/algorithms')
         assert res.status_code == 200
         result = json.loads(res.data)
         assert result[0]['title'] == 'Binary Sort'

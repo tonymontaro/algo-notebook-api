@@ -25,7 +25,7 @@ def create_app(env):
     login_manager.init_app(app)
 
     app.register_blueprint(algo_bp)
-    app.register_blueprint(auth_bp, url_prefix='/user')
+    app.register_blueprint(auth_bp, url_prefix='/users')
     app.register_blueprint(cat_bp, url_prefix='/categories')
 
     return app

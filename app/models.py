@@ -111,9 +111,21 @@ class Category(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     algorithms = db.relationship('Algorithm', backref='category', lazy=True)
 
+    def save(self):
+        return DBHelper.add(self)
+
+    def delete(self):
+        return DBHelper.delete(self)
+
+    @staticmethod
+    def get(id_):
+        return Category.query.get(id_)
+
     @staticmethod
     def add(name):
         """Add item to database."""
+        if Category.query.filter_by(name=name).first():
+            return None
         category = Category(name=name)
         DBHelper.add(category)
         return category
