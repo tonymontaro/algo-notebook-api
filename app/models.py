@@ -14,6 +14,12 @@ class DBHelper(object):
         db.session.add(item)
         db.session.commit()
 
+    @staticmethod
+    def delete(item):
+        """Delete an item from the database."""
+        db.session.delete(item)
+        db.session.commit()
+
 
 class User(UserMixin, db.Model):
     """User model, used for registration and login."""
@@ -68,6 +74,12 @@ class Algorithm(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     access = db.Column(db.String(100), default='public')
 
+    def save(self):
+        DBHelper.add(self)
+
+    def delete(self):
+        DBHelper.delete(self)
+
     @staticmethod
     def add(**kwargs):
         """Add item to database."""
@@ -77,8 +89,7 @@ class Algorithm(db.Model):
 
     @staticmethod
     def get(id_):
-        algo = Algorithm.query.get(id_)
-        return algo
+        return Algorithm.query.get(id_)
 
     def get_secure_attributes(self):
         """Return secure attributes as a Dict."""

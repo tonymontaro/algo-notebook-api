@@ -29,3 +29,6 @@ def create_app(env):
     app.register_blueprint(cat_bp, url_prefix='/categories')
 
     return app
+
+
+app = create_app(os.getenv('ENV', 'development'))

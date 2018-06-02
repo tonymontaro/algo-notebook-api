@@ -1,9 +1,6 @@
 """Flask app entry point."""
-import os
+from app import app
 
-from app import create_app
-
-app = create_app(os.getenv('ENV', 'development'))
 
 if __name__ == '__main__':
     app.run()
