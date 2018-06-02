@@ -108,4 +108,3 @@ app.db
 test.db
 .env
 migrations
-

@@ -58,10 +58,6 @@ class User(UserMixin, db.Model):
             return user
         return None
 
-    def __repr__(self):
-        """User representation."""
-        return '<User {}>'.format(self.email)
-
 
 class Algorithm(db.Model):
     """Algorithm model."""

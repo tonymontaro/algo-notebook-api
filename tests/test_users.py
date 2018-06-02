@@ -3,6 +3,7 @@ import unittest
 import json
 
 from app import create_app, db
+from tests.helpers import user1
 
 
 class AuthTestCase(unittest.TestCase):
@@ -11,10 +12,6 @@ class AuthTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app("testing")
         self.client = self.app.test_client()
-        self.user_data = {
-            'email': 'montaro@gmail.com',
-            'password': 'password'
-        }
         with self.app.app_context():
             db.session.close()
             db.drop_all()
@@ -22,21 +19,21 @@ class AuthTestCase(unittest.TestCase):
 
     def test_user_registration(self):
         """Test for successful user registration."""
-        res = self.client.post('/users/register', data=self.user_data)
+        res = self.client.post('/users/register', data=user1)
         result = json.loads(res.data.decode())
         self.assertEqual(result['message'], "Registration successful.")
         self.assertEqual(res.status_code, 201)
 
     def register(self):
         """Register user."""
-        res = self.client.post('/users/register', data=self.user_data)
+        res = self.client.post('/users/register', data=user1)
         self.assertEqual(res.status_code, 201)
 
-    def test_registered_already(self):
+    def test_invalid_user_registration(self):
         """Test for registration when the user already exists."""
-        res = self.client.post('/users/register', data=self.user_data)
+        res = self.client.post('/users/register', data=user1)
         self.assertEqual(res.status_code, 201)
-        second_res = self.client.post('/users/register', data=self.user_data)
+        second_res = self.client.post('/users/register', data=user1)
         self.assertEqual(second_res.status_code, 400)
         result = json.loads(second_res.data.decode())
         self.assertEqual(result['message'], "Invalid username or password.")
@@ -44,7 +41,7 @@ class AuthTestCase(unittest.TestCase):
     def test_user_login(self):
         """Test for user login."""
         self.register()
-        login_res = self.client.post('/users/login', data=self.user_data)
+        login_res = self.client.post('/users/login', data=user1)
         result = json.loads(login_res.data)
         self.assertEqual(result['message'], "Login successful.")
         self.assertEqual(login_res.status_code, 200)
@@ -64,7 +61,7 @@ class AuthTestCase(unittest.TestCase):
     def login(self):
         """Login user."""
         self.register()
-        login_res = self.client.post('/users/login', data=self.user_data)
+        login_res = self.client.post('/users/login', data=user1)
         self.assertEqual(login_res.status_code, 200)
 
     def test_user_logout(self):

@@ -39,20 +39,12 @@ def logout():
     return jsonify({'message': 'Logged out.'})
 
 
-@auth_bp.route('/algorithms', methods=['GET', 'POST'])
+@auth_bp.route('/algorithms', methods=['GET'])
+@auth_bp.route('/<int:user_id>/algorithms', methods=['GET'])
 @login_required
-def user_algorithms():
+def user_algorithms(user_id=None):
     """Get a user's algorithms or add one."""
-    if request.method == 'GET':
-        user_algos = Algorithm.query.filter_by(user_id=current_user.id)
-        user_algos = [algo.get_secure_attributes() for algo in user_algos]
-        return jsonify(user_algos)
-
-    if request.method == 'POST':
-        req = request.form.get
-        algo = Algorithm.add(
-            title=req('title'), content=req('content'),
-            category_id=int(req('category')), sub_category=req('sub_category'),
-            user_id=current_user.id)
-
-        return jsonify(algo.get_secure_attributes()), 201
+    user_id = user_id or current_user.id
+    user_algos = Algorithm.query.filter_by(user_id=user_id)
+    user_algos = [algo.get_secure_attributes() for algo in user_algos]
+    return jsonify(user_algos)

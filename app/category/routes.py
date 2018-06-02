@@ -25,7 +25,7 @@ def categories():
         return jsonify({'id': cat.id, 'name': cat.name}), 201
 
 
-@cat_bp.route('/<cat_id>', methods=['GET', 'PUT', 'DELETE'])
+@cat_bp.route('/<int:cat_id>', methods=['GET', 'PUT', 'DELETE'])
 @login_required
 def category(cat_id):
     """Update, retrieve and delete a category."""
