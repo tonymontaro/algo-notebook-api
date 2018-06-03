@@ -1,17 +1,21 @@
-"""Module for testing the user registration and login."""
+"""Module for testing the Categories."""
+
+import os
 import unittest
 
 import pytest
 
 from app import create_app, db
-from tests.helpers import get_json, user1, cat1, cat2
+from tests.helpers import get_json, user1, admin, cat1, cat2
 
 
 class CategoryTestCase(unittest.TestCase):
-    """User userentication tests."""
+    """Category tests."""
 
     def setUp(self):
         self.route = '/categories'
+        os.environ['ADMIN_EMAIL'] = admin['email']
+        os.environ['ADMIN_PASSWORD'] = admin['password']
         self.app = create_app("testing")
         self.client = self.app.test_client()
         with self.app.app_context():
@@ -21,9 +25,7 @@ class CategoryTestCase(unittest.TestCase):
 
     def login(self):
         """Login a user for other tests."""
-        res = self.client.post('/users/register', data=user1)
-        self.assertEqual(res.status_code, 201)
-        login_res = self.client.post('/users/login', data=user1)
+        login_res = self.client.post('/users/login', data=admin)
         self.assertEqual(login_res.status_code, 200)
 
     def test_create_category(self):
@@ -65,25 +67,12 @@ class CategoryTestCase(unittest.TestCase):
         assert res.status_code == 200
         assert get_json(res)['name'] == 'codility'
 
-    def test_invalid_get_category(self):
-        """Test for invalid inputs to get-category."""
-        self.login()
-        res = self.client.get(self.route + '/22')
-        assert res.status_code == 404
-        assert get_json(res)['message'] == 'Category does not exist.'
-
     def test_update_category(self):
         """Test updating a category."""
         self.create_category()
         res = self.client.put(self.route + '/1', data=cat2)
         assert res.status_code == 200
         assert get_json(res)['name'] == 'hackerrank'
-
-    def test_invalid_category_update(self):
-        """Check for category update errors."""
-        self.login()
-        res = self.client.put(self.route + '/22', data=cat2)
-        assert res.status_code == 404
 
     def test_delete_category(self):
         """Test deleting a category."""
@@ -92,9 +81,37 @@ class CategoryTestCase(unittest.TestCase):
         assert res.status_code == 200
         assert get_json(res)['message'] == "Category successfully deleted."
 
-    def test_invalid_delete_category(self):
-        """Test for category delete errors."""
+    def test_only_admin_can_create_update_or_delete_category(self):
+        """Test that only the Admin can create, update or delete category."""
+        res = self.client.post('/users/register', data=user1)
+        self.assertEqual(res.status_code, 201)
+        login_res = self.client.post('/users/login', data=user1)
+        self.assertEqual(login_res.status_code, 200)
+
+        res = self.client.post(self.route, data=cat1)
+        assert res.status_code == 403
+        assert get_json(res)['message'] == 'Unauthorized.'
+
+        self.create_category()
+        self.client.post('/users/logot')
+        self.client.post('/users/login', data=user1)
+
+        res = self.client.put(self.route + '/1', data=cat2)
+        assert res.status_code == 403
+
+        res = self.client.delete(self.route + '/1')
+        assert res.status_code == 403
+
+    def test_invalid_id_for_get_update_and_delete_of_category(self):
+        """Return 404 if item does not exist."""
         self.login()
+        res = self.client.get(self.route + '/22')
+        assert res.status_code == 404
+        assert get_json(res)['message'] == 'Category does not exist.'
+
+        res = self.client.put(self.route + '/22', data=cat2)
+        assert res.status_code == 404
+
         res = self.client.delete(self.route + '/22')
         assert res.status_code == 404
 

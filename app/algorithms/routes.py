@@ -40,7 +40,13 @@ def algorithm(algo_id):
 
     if request.method == 'GET':
         return jsonify(algo.get_secure_attributes()), 200
-    elif request.method == 'PUT':
+
+    if not current_user.is_authenticated:
+        return jsonify({'message': 'Login required.'}), 401
+    elif current_user.id != algo.user_id:
+        return jsonify({'message': 'Unauthorized.'}), 403
+
+    if request.method == 'PUT':
         req = request.form.get
         attributes = [
             'id', 'title', 'content', 'category_id', 'sub_category', 'access']

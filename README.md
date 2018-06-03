@@ -1,19 +1,28 @@
-[![Build Status](https://travis-ci.org/tonymontaro/flask-starter-kit.svg?branch=master)](https://travis-ci.org/tonymontaro/flask-starter-kit)
-[![codecov](https://codecov.io/gh/tonymontaro/flask-starter-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/tonymontaro/flask-starter-kit)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b4c547764a24cae52a3f/maintainability)](https://codeclimate.com/github/tonymontaro/flask-starter-kit/maintainability)
+[![Build Status](https://travis-ci.org/tonymontaro/algo-notebook-api.svg?branch=master)](https://travis-ci.org/tonymontaro/algo-notebook-api)
+[![codecov](https://codecov.io/gh/tonymontaro/algo-notebook-api/branch/master/graph/badge.svg)](https://codecov.io/gh/tonymontaro/algo-notebook-api)
+[![Maintainability](https://api.codeclimate.com/v1/badges/596455d7992b4a9f892a/maintainability)](https://codeclimate.com/github/tonymontaro/algo-notebook-api/maintainability)
 
-# flask-starter-kit
-An opinionated boilerplate for web development with Flask, helping you stay productive while following best practices. 
+# Algo-Notebook-Api
+Algo notebook is an application for recording solutions to your favorite algorithms. It's especially useful for those that love solving algorithms and need a central place to record their solutions to algorithms from different sites like Hackerrank, Codechef, Codewars e.t.c.
+
+This repository contains just the API.
+
+[Api hosted on Heroku.](https://algo-notebook.herokuapp.com/) 
+
+Api documentation: [Generated with Postman](https://documenter.getpostman.com/view/646133/RW8FFRr7)
 
 
 ## Technologies Used
 - [Python3.6](https://www.python.org/downloads/) - A programming language that lets you work more quickly.
 - [Flask](flask.pocoo.org/) - A microframework for Python based on Werkzeug, Jinja 2 and good intentions.
 - [Virtualenv](https://virtualenv.pypa.io/en/stable/) - A tool to create isolated virtual environments.
-- [Flask-Login](https://flask-login.readthedocs.io/en/latest/) - For authentication.
-- [Flask-Restful](https://flask-restful.readthedocs.io/en/latest/) - For creating restful APIs.
-- [Pytest](https://docs.pytest.org/en/latest/) - For testing.
+
+#### Extentsions
+
 - [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.3/) - For database management.
+- [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) - For migrations.
+- [Flask-Login](https://flask-login.readthedocs.io/en/latest/) - For authentication.
+- [Pytest](https://docs.pytest.org/en/latest/) - For testing.
 
 
 ## Getting Started
@@ -25,7 +34,7 @@ Requirements
 - Clone this repository and cd into the root folder:
 
 ```bash
-git clone git@github.com:tonymontaro/flask-starter-kit.git && cd flask-starter-kit
+git clone git@github.com:tonymontaro/algo-notebook-api.git && cd algo-notebook-api
 ```
 
 - Create and activate a virtual environment in python3:
@@ -60,7 +69,9 @@ flask run
 
 - Run the tests with `pytest`
 
-See available routes and test on Postman [here](https://documenter.getpostman.com/view/646133/collection/RW8CJ8FR)
+#### Tests with coverage
+- Show test coverage on the console: `pytest --cov=app`
+- Generate html files containing test coverage: `pytest --cov=app --cov-report=html`
 
 
 ## License

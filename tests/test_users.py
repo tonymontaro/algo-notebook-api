@@ -1,9 +1,11 @@
 """Module for testing the user registration and login."""
+
+import os
 import unittest
 import json
 
 from app import create_app, db
-from tests.helpers import user1
+from tests.helpers import user1, admin
 
 
 class AuthTestCase(unittest.TestCase):
@@ -71,6 +73,16 @@ class AuthTestCase(unittest.TestCase):
         result = json.loads(logout_res.data)
         self.assertEqual(result['message'], 'Logged out.')
         self.assertEqual(logout_res.status_code, 200)
+
+    def test_seeding_the_db_with_admnin_details(self):
+        """Seed the database."""
+        os.environ['ADMIN_EMAIL'] = admin['email']
+        os.environ['ADMIN_PASSWORD'] = admin['password']
+        client = create_app("testing").test_client()
+
+        login_res = client.post('/users/login', data=admin)
+        assert login_res.status_code == 200
+        assert json.loads(login_res.data)['message'] == "Login successful."
 
     def tearDown(self):
         with self.app.app_context():

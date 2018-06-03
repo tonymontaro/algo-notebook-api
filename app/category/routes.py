@@ -1,7 +1,7 @@
 """Category routes."""
 
 from flask import request, Blueprint, jsonify
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app.models import Category
 
@@ -19,6 +19,8 @@ def categories():
         return jsonify(cats)
 
     if request.method == 'POST':
+        if current_user.role != 'admin':
+            return jsonify({'message': 'Unauthorized.'}), 403
         cat = Category.add(request.form.get('name'))
         if not cat:
             return jsonify({'message': 'Category already exists.'}), 409
@@ -35,7 +37,10 @@ def category(cat_id):
 
     if request.method == 'GET':
         return jsonify({'id': cat.id, 'name': cat.name}), 200
-    elif request.method == 'PUT':
+    elif current_user.role != 'admin':
+        return jsonify({'message': 'Unauthorized.'}), 403
+
+    if request.method == 'PUT':
         cat.name = request.form.get('name', cat.name)
         cat.save()
         return jsonify({'id': cat.id, 'name': cat.name}), 200

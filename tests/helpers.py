@@ -11,6 +11,16 @@ user1 = {
     'password': 'password'
 }
 
+user2 = {
+    'email': 'kenpachi@bleach.com',
+    'password': 'bankai'
+}
+
+admin = {
+    'email': 'admin@example.com',
+    'password': 'iamadmin'
+}
+
 cat1 = {'name': 'codility'}
 
 cat2 = {'name': 'hackerrank'}

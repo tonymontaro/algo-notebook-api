@@ -13,6 +13,7 @@ from config import app_config
 from app.algorithms.routes import algo_bp
 from app.users.routes import auth_bp
 from app.category.routes import cat_bp
+from app.models import seed_db
 
 
 def create_app(env):
@@ -27,6 +28,11 @@ def create_app(env):
     app.register_blueprint(algo_bp)
     app.register_blueprint(auth_bp, url_prefix='/users')
     app.register_blueprint(cat_bp, url_prefix='/categories')
+
+    @app.before_first_request
+    def initialize():
+        """Initialize the app."""
+        seed_db()
 
     return app
 
